@@ -26,4 +26,9 @@ public class PingController {
     public String rota2(){
         return "rota2";
     }
+
+    @GetMapping("/rota3")
+    public String rota3(){
+        return "rota3 aaaaaa";
+    }
 }
