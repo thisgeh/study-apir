@@ -2,7 +2,9 @@ package br.com.fiap.study_apir.controller;
 
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,15 +26,26 @@ public class ProdutoController {
     @PostMapping()
     public ResponseEntity<String> create(){
         return ResponseEntity.status(HttpStatus.CREATED).body("Produto criado");
-        //return "Produto criado";
     }
 
-    //codigo 200 => encontrado com sucesso
     @GetMapping("/{id}")
     public ResponseEntity<Produto> findById(@PathVariable Long id){
-        Produto produto = mockup.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(produto);
-        //return "Morango";
+       return mockup
+       .findById(id)
+       .map(ResponseEntity::ok)
+       .orElse(ResponseEntity.notFound().build());
+
+    /*Optional<Produto> optProduto = mockup.findById(id);
+        if(optProduto.isPresent()){
+            //return ResponseEntity.status(HttpStatus.OK).body(produto);
+            //return ResponseEntity.ok(produto);
+            return ResponseEntity.ok(optProduto.get());
+        }
+        else{
+            //return ResponseEntity.status?(HttpStatus.NOT_FOUND).body(null);
+            //return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
+        }*/
     }
 
     @GetMapping
