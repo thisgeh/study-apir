@@ -2,9 +2,9 @@ package br.com.fiap.study_apir.controller;
 
 import java.util.List;
 
-import java.util.Optional;
+//import java.util.Optional;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+//import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,19 +49,25 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> findById(){
-        return ResponseEntity.status(HttpStatus.OK).body(mockup.findAll());
+    public ResponseEntity<List<Produto>> findAll(){
+        return ResponseEntity.ok(mockup.findAll());
     }
 
     @PutMapping
     public ResponseEntity<String> update(){
-        return ResponseEntity.status(HttpStatus.OK).body("Produto atualizado");
+        return ResponseEntity.ok("produto atualizado");
         //return "Produto atualizado";
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> delete(){
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Produto excluido");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id){
+        if (mockup.deleteById(id)){
+            return ResponseEntity.noContent().build();
+        }
+        else{
+            return ResponseEntity.notFound().build();
+        }
+        //return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Produto excluido");
         //return "Produto excluido";
     }
 }
