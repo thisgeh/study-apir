@@ -9,30 +9,50 @@ import br.com.fiap.study_apir.model.Produto;
 
 public class RepositoryProdutoMockup {
     private List<Produto> produtos = new ArrayList<>();
+    private long ID = 0L;
 
     public RepositoryProdutoMockup() {
-        //Produto produto = new Produto(1L, "Morango",BigDecimal.valueOf(10.50));
-        // produto.setId(1L);
-        // produto.setNome("Morango");
-        // produto.setValor(BigDecimal.valueOf(10.50));
-        produtos.add(new Produto(1L, "Morango",BigDecimal.valueOf(10.50)));
+        produtos.add(new Produto(ID++, "Kiwi", BigDecimal.valueOf(10.50))); // new operador que instancia(cria) um objeto na memória (em um endereco)
 
+        produtos.add(new Produto(ID++, "Pitaya", BigDecimal.valueOf(15.99))); // produto recebe o endereço do objeto / add -> a lista recebe endereço de
+                                             // memoria
+    }
 
-        // lista recebe endereços de memorias
-        produtos.add(new Produto(3L, "Uva", BigDecimal.valueOf(15.50)));
+    public RepositoryProdutoMockup(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 
     public List<Produto> findAll() {
         return produtos;
     }
 
-    public Optional<Produto> findById(Long id) {
-        return produtos.stream()
-                .filter(p -> p.getId().equals(id))
+    public Optional<Produto> findById(Long id) { // optional ter ou não o produto
+        return produtos.stream() // stream para percorrer a lista completa em memória
+                .filter(p -> p.getId().equals(id)) // filter percorre elemento por elemento
                 .findFirst();
     }
 
-    public boolean deleteById(Long id){
+    public boolean deleteById(Long id) {
         return produtos.removeIf(p -> p.getId().equals(id));
+    }
+
+    public Produto create(Produto produto) {
+        // atribuir o id novo ao produto a ser cadastrado
+        produto.setId(ID++);
+        produtos.add(produto);
+        return produto;
+    }
+
+    public boolean update(Long id, Produto produto){
+        Optional<Produto> optProduto = this.findById(id);
+        if (optProduto.isPresent()) {
+            Produto produtoAtual = optProduto.get();
+            produtoAtual.setNome(produto.getNome());
+            produtoAtual.setValor(produto.getValor());
+
+            return true;
+            
+        }
+        return false;
     }
 }
