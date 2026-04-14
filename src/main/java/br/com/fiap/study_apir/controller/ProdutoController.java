@@ -1,6 +1,7 @@
 package br.com.fiap.study_apir.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.fiap.study_apir.model.Produto;
+import br.com.fiap.study_apir.repository.ProdutoRepository;
 import br.com.fiap.study_apir.repository.RepositoryProdutoMockup;
 
 @RestController
 @RequestMapping("/api/${api.version}/produtos")
 public class ProdutoController {
 
-    private RepositoryProdutoMockup mockup = new RepositoryProdutoMockup();
+    private ProdutoRepository repository;
 
     @PostMapping()
     public ResponseEntity<Produto> create(@RequestBody Produto produto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mockup.create(produto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(produto));
     }
 
     @GetMapping("/{id}")
@@ -32,7 +34,7 @@ public class ProdutoController {
 
         // Optional<Produto> optProduto = mockup.findById(id);
 
-        return mockup
+        return repository
                 .findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -48,27 +50,35 @@ public class ProdutoController {
 
     @GetMapping
     public ResponseEntity<List<Produto>> findAll() {
-        return ResponseEntity.ok(mockup.findAll());
+        return ResponseEntity.ok(repository.findAll());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id,
-            @RequestBody Produto produto) {
-        if (mockup.update(id, produto)) {
+    // @PutMapping("/{id}")
+    // public ResponseEntity<String> update(@PathVariable Long id,
+    //         @RequestBody Produto produto) {
 
-            return ResponseEntity.ok("Produto atualizado");
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    //     Optional<Produto> optProduto = repository.findById(id);
+    //     if(optProduto.isPresent()){
+    //         produto.setId(id);
+    //         repository.save(produto)
+    //     }
+    //     if (mockup.update(id, produto)) {
+
+    //         return ResponseEntity.ok("Produto atualizado");
+    //     } else {
+    //         return ResponseEntity.notFound().build();
+    //     }
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteByID(@PathVariable Long id, @RequestBody Produto produto) {
-        if (mockup.deleteById(id)) {
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+        /*if (mockup.deleteById(id)) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
-        }
+        }*/
 
     }
 
