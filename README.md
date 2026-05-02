@@ -29,3 +29,24 @@ mvn spring-boot:run
 | 404    | Not Found           | Recurso não encontrado               | GET /produtos/{id} inexistente  |
 | 409    | Conflict            | Conflito ao processar a requisição   | Criar recurso duplicado         |
 | 500    | Internal Server Error | Erro inesperado no servidor        | Exceção não tratada             |
+
+## 🐋 Docker
+
+* Menu Iniciar (pesquisar por Docker)
+  - Iniciar *Start Docker Service*
+  - Clicar em *Docker Desktop*
+
+6 - Subir MySQL
+
+- https://hub.docker.com/_/mysql
+
+```sh
+docker run -d \
+    --name mysql \
+    --rm \
+    -e MYSQL_ROOT_PASSWORD=root_pwd \
+    -e MYSQL_USER=new_user \
+    -e MYSQL_PASSWORD=my_pwd \
+    -p 3306:3306 \
+    mysql
+```
