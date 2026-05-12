@@ -15,55 +15,52 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.fiap.study_apir.dto.ProdutoCreateRequest;
+import br.com.fiap.study_apir.dto.ProdutoMapper;
 import br.com.fiap.study_apir.model.Produto;
-import br.com.fiap.study_apir.repository.ProdutoRepository;
-import br.com.fiap.study_apir.repository.RepositoryProdutoMockup;
+import br.com.fiap.study_apir.service.ProdutoService;
 
 @RestController
 @RequestMapping("/api/${api.version}/produtos")
 public class ProdutoController {
 
     @Autowired
-    private ProdutoRepository repository;
+    private ProdutoService service;
+
+    @Autowired
+    private ProdutoMapper produtoMapper;
 
     @PostMapping()
-    public ResponseEntity<Produto> create(@RequestBody Produto produto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(produto));
+    public ResponseEntity<Produto> create(@RequestBody ProdutoCreateRequest dtoRequest) {
+
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            service.createOrUpdate(produtoMapper.toModel(dtoRequest)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Produto> findById(@PathVariable Long id) {
 
-        // Optional<Produto> optProduto = mockup.findById(id);
-
-        return repository
+        return service
                 .findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // map pega o produto e atribuir para a variável
-    // if (optProduto.isPresent()) {
-    // // return ResponseEntity.status(HttpStatus.OK).body(produto);
-    // return ResponseEntity.ok(optProduto.get());
-    // } else {
-    // return ResponseEntity.notFound().build();
-    // }
-
     @GetMapping
     public ResponseEntity<List<Produto>> findAll() {
-        return ResponseEntity.ok(repository.findAll());
+        return ResponseEntity.ok(service.findAll());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Produto> update(@PathVariable Long id,
             @RequestBody Produto produto) {
 
-        Optional<Produto> optProduto = repository.findById(id);
+        Optional<Produto> optProduto = service.findById(id);
 
         if(optProduto.isPresent()){
             produto.setId(id);
-            Produto produtoAlterado = repository.save(produto);
+            Produto produtoAlterado = service.createOrUpdate(produto);
             return ResponseEntity.ok(produtoAlterado);
         } else {
             return ResponseEntity.notFound().build();
@@ -72,14 +69,6 @@ public class ProdutoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteByID(@PathVariable Long id, @RequestBody Produto produto) {
-        repository.deleteById(id);
         return ResponseEntity.noContent().build();
-        /*if (mockup.deleteById(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }*/
-
     }
-
 }
